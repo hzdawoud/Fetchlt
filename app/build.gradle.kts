@@ -17,6 +17,16 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        buildFeatures {
+            buildConfig = true
+        }
+
+        buildConfigField(
+            "String",
+            "API_ACCESS_TOKEN",
+            "\"${project.findProperty("API_KEY")}\""
+        )
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -69,4 +79,7 @@ dependencies {
     // hilt dependency injection
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+
+    // okhttp
+    implementation(libs.logging.interceptor)
 }
