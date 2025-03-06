@@ -8,6 +8,7 @@ import androidx.navigation.navArgument
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.hzdawoud.fetchlt.presentation.viewmodel.EodDataViewModel
+import com.hzdawoud.fetchlt.utils.Const
 import com.hzdawoud.fetchlt.utils.navigation.Screen
 
 @Composable
@@ -29,10 +30,10 @@ fun StockNavHost(
         }
         composable(
             route = Screen.StockDetail.route,
-            arguments = listOf(navArgument("id") { type = NavType.StringType })
+            arguments = listOf(navArgument(Const.ID) { type = NavType.StringType })
         ) { backStackEntry ->
-            val symbol = backStackEntry.arguments?.getString("id") ?: ""
-            EodDataDetailScreen(
+            val symbol = backStackEntry.arguments?.getString(Const.ID) ?: ""
+            EodDetailScreen(
                 id = symbol,
                 onBackClick = { navController.popBackStack() },
                 viewModel = viewModel

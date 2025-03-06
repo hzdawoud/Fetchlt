@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,7 +17,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -48,7 +46,7 @@ import com.hzdawoud.fetchlt.utils.DateUtil
 @SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EodDataDetailScreen(
+fun EodDetailScreen(
     id: String,
     onBackClick: () -> Unit,
     viewModel: EodDataViewModel
@@ -62,7 +60,7 @@ fun EodDataDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Stock Details") },
+                title = { Text("Stock EOD Details") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -150,17 +148,17 @@ fun EodDataDetailScreen(
 
                                 Row(modifier = Modifier.fillMaxWidth()) {
                                     Column(modifier = Modifier.weight(1f)) {
-                                        DetailItem("Open", "$${stock.open}")
-                                        DetailItem("Close", "$${stock.close}")
-                                        DetailItem("High", "$${stock.high}")
-                                        DetailItem("Low", "$${stock.low}")
-                                        DetailItem("Volume", "${stock.volume.toInt()}")
+                                        DetailScreenCell("Open", "$${stock.open}")
+                                        DetailScreenCell("Close", "$${stock.close}")
+                                        DetailScreenCell("High", "$${stock.high}")
+                                        DetailScreenCell("Low", "$${stock.low}")
+                                        DetailScreenCell("Volume", "${stock.volume.toInt()}")
 
                                         val priceChange = stock.close - stock.open
                                         val percentChange = (priceChange / stock.open) * 100
                                         val isPositive = priceChange >= 0
 
-                                        DetailItem(
+                                        DetailScreenCell(
                                             "Change",
                                             "${if (isPositive) "+" else ""}${String.format("%.2f", priceChange)} (${String.format("%.2f", percentChange)}%)",
                                             if (isPositive) green else Color.Red
@@ -189,13 +187,13 @@ fun EodDataDetailScreen(
 
                                 Row(modifier = Modifier.fillMaxWidth()) {
                                     Column(modifier = Modifier.weight(1f)) {
-                                        DetailItem("Adj Open", "$${stock.adjOpen}")
-                                        DetailItem("Adj Close", "$${stock.adjClose}")
-                                        DetailItem("Adj High", "$${stock.adjHigh}")
+                                        DetailScreenCell("Adj Open", "$${stock.adjOpen}")
+                                        DetailScreenCell("Adj Close", "$${stock.adjClose}")
+                                        DetailScreenCell("Adj High", "$${stock.adjHigh}")
 
-                                        DetailItem("Adj Low", "$${stock.adjLow}")
-                                        DetailItem("Adj Volume", "${stock.adjVolume.toInt()}")
-                                        DetailItem("Split Factor", "${stock.splitFactor}")
+                                        DetailScreenCell("Adj Low", "$${stock.adjLow}")
+                                        DetailScreenCell("Adj Volume", "${stock.adjVolume.toInt()}")
+                                        DetailScreenCell("Split Factor", "${stock.splitFactor}")
                                     }
                                 }
                             }
@@ -218,13 +216,13 @@ fun EodDataDetailScreen(
 
                                 Spacer(modifier = Modifier.height(8.dp))
 
-                                DetailItem("Dividend", "$${stock.dividend}")
+                                DetailScreenCell("Dividend", "$${stock.dividend}")
 
                                 if (stock.dividend > 0) {
                                     val dividendYield = (stock.dividend / stock.close) * 100
-                                    DetailItem("Dividend Yield", "${String.format("%.2f", dividendYield)}%")
+                                    DetailScreenCell("Dividend Yield", "${String.format("%.2f", dividendYield)}%")
                                 } else {
-                                    DetailItem("Dividend Yield", "No dividend")
+                                    DetailScreenCell("Dividend Yield", "No dividend")
                                 }
                             }
                         }

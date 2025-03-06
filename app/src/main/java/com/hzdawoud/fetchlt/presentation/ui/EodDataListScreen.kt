@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hzdawoud.fetchlt.presentation.viewmodel.EodDataViewModel
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EodListScreen(
@@ -37,7 +36,7 @@ fun EodListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Stock End of Day Data") }
+                title = { Text("Stocks EOD") }
             )
         }
     ) { paddingValues ->

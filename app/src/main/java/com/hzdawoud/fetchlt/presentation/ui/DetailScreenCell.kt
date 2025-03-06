@@ -13,7 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun DetailItem(label: String, value: String, valueColor: Color = Color.Unspecified) {
+fun DetailScreenCell(label: String, value: String, valueColor: Color = Color.Unspecified) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
