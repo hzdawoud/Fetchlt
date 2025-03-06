@@ -85,4 +85,11 @@ dependencies {
 
     // okhttp
     implementation(libs.logging.interceptor)
+
+    // Navigation
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    // Coil for image loading
+    implementation(libs.coil.compose)
 }
