@@ -1,7 +1,10 @@
 package com.hzdawoud.fetchlt.di
 
 import com.hzdawoud.fetchlt.config.ApiConfig
+import com.hzdawoud.fetchlt.data.remote.APIService
 import com.hzdawoud.fetchlt.data.remote.AuthInterceptor
+import com.hzdawoud.fetchlt.data.repository.EodDataRepository
+import com.hzdawoud.fetchlt.data.repository.EodDataRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,4 +44,14 @@ object NetworkModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
+
+    @Provides
+    @Singleton
+    fun patientApiService(retrofit: Retrofit): APIService = retrofit.create(APIService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideEodDataRepository(
+        apiService: APIService,
+    ): EodDataRepository = EodDataRepositoryImpl(apiService)
 }
