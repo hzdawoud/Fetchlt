@@ -1,6 +1,9 @@
 package com.hzdawoud.fetchlt.domain.model
 
+import java.util.UUID
+
 data class EodEntry(
+    val id: String = UUID.randomUUID().toString(),
     val open: Double,
     val high: Double,
     val low: Double,

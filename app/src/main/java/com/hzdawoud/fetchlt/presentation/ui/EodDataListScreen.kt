@@ -52,6 +52,7 @@ fun EodListScreen(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
+
                 uiState.error != null -> {
                     ErrorView(
                         message = uiState.error!!,
@@ -59,20 +60,25 @@ fun EodListScreen(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
+
                 uiState.stocks.isNotEmpty() -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        items(uiState.stocks) { stock ->
-                            EodListItem (
+                        items(
+                            items = uiState.stocks,
+                            key = { it.id } // Use unique key to avoid unnecessary recomposition
+                        ) { stock ->
+                            EodListItem(
                                 stock = stock,
-                                onClick = { onItemClick(stock.symbol) }
+                                onClick = { onItemClick(stock.id) }
                             )
                         }
                     }
                 }
+
                 else -> {
                     Text(
                         text = "No stocks available",

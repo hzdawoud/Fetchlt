@@ -29,11 +29,11 @@ fun StockNavHost(
         }
         composable(
             route = Screen.StockDetail.route,
-            arguments = listOf(navArgument("symbol") { type = NavType.StringType })
+            arguments = listOf(navArgument("id") { type = NavType.StringType })
         ) { backStackEntry ->
-            val symbol = backStackEntry.arguments?.getString("symbol") ?: ""
+            val symbol = backStackEntry.arguments?.getString("id") ?: ""
             EodDataDetailScreen(
-                symbol = symbol,
+                id = symbol,
                 onBackClick = { navController.popBackStack() },
                 viewModel = viewModel
             )

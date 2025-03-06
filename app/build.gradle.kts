@@ -92,4 +92,9 @@ dependencies {
 
     // Coil for image loading
     implementation(libs.coil.compose)
+
+    // Testing
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test.v171)
+    testImplementation(libs.robolectric) // Use the latest version available
 }

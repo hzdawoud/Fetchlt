@@ -3,6 +3,7 @@ package com.hzdawoud.fetchlt.data.model
 import com.hzdawoud.fetchlt.domain.model.EodEntry
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.util.UUID
 
 @Serializable
 data class EodEntryDto(
@@ -23,8 +24,21 @@ data class EodEntryDto(
     val date: String
 ) {
     fun toDomain() = EodEntry(
-        open, high, low, close, volume,
-        adjHigh, adjLow, adjClose, adjOpen, adjVolume,
-        splitFactor, dividend, symbol, exchange, date
+        id = UUID.randomUUID().toString(), // generate a unique id for each conversion
+        open = open,
+        high = high,
+        low = low,
+        close = close,
+        volume = volume,
+        adjHigh = adjHigh,
+        adjLow = adjLow,
+        adjClose = adjClose,
+        adjOpen = adjOpen,
+        adjVolume = adjVolume,
+        splitFactor = splitFactor,
+        dividend = dividend,
+        symbol = symbol,
+        exchange = exchange,
+        date = date
     )
 }

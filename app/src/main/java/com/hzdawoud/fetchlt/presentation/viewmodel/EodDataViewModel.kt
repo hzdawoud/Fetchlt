@@ -38,7 +38,6 @@ class EodDataViewModel @Inject constructor(
 
             when (val result = repository.getEndOfDayData(symbols)) {
                 is Resource.Success -> {
-                    println("hazwemeeeem")
                     stocksCache = result.data.data
                     _stockListState.value = StockListUiState(stocks = result.data.data)
                 }
@@ -55,18 +54,18 @@ class EodDataViewModel @Inject constructor(
     }
 
     // Load details for a specific stock symbol
-    fun loadStockDetails(symbol: String) {
+    fun loadStockDetails(id: String) {
         viewModelScope.launch {
             _stockDetailState.value = StockDetailUiState(isLoading = true)
 
             // Find the stock in our cache
-            val stock = stocksCache.find { it.symbol == symbol }
+            val stock = stocksCache.find { it.id == id }
 
             if (stock != null) {
                 _stockDetailState.value = StockDetailUiState(stock = stock)
             } else {
                 _stockDetailState.value = StockDetailUiState(
-                    error = "Stock details not found for $symbol"
+                    error = "Stock details not found"
                 )
             }
         }

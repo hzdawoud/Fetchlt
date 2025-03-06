@@ -10,7 +10,7 @@ sealed class Resource<out T> {
 }
 
 object NetworkHandler {
-    suspend fun <T, R> Response<T>.toResource(tag: String, transform: (T) -> R): Resource<R> {
+     fun <T, R> Response<T>.toResource(tag: String, transform: (T) -> R): Resource<R> {
         return try {
             if (isSuccessful) {
                 Log.d(tag, "getEndOfDayData - success")

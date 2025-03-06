@@ -49,20 +49,20 @@ import com.hzdawoud.fetchlt.utils.DateUtil
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EodDataDetailScreen(
-    symbol: String,
+    id: String,
     onBackClick: () -> Unit,
     viewModel: EodDataViewModel
 ) {
     val uiState by viewModel.stockDetailState.collectAsState()
 
-    LaunchedEffect(symbol) {
-        viewModel.loadStockDetails(symbol)
+    LaunchedEffect(id) {
+        viewModel.loadStockDetails(id)
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("$symbol Details") },
+                title = { Text("Stock Details") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -85,7 +85,7 @@ fun EodDataDetailScreen(
                 uiState.error != null -> {
                     ErrorView(
                         message = uiState.error!!,
-                        onRetry = { viewModel.loadStockDetails(symbol) },
+                        onRetry = { viewModel.loadStockDetails(id) },
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
