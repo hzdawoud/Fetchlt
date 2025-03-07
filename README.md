@@ -11,7 +11,7 @@ This is a modern Android application built using **Jetpack Compose** and **Kotli
 ✅ Displays stock information in a clean, modern UI using **Jetpack Compose**  
 ✅ Supports navigation between screens with **Navigation Compose**  
 ✅ Robust error handling for network failures  
-✅ Well-structured codebase following **MVVM Architecture**
+✅ Well-structured codebase following **MVVM & MVI Architecture**
 
 ---
 
