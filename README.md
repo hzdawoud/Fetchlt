@@ -50,7 +50,7 @@ app/
 ### Prerequisites
 
 - Android Studio Hedgehog (or newer)
-- Minimum SDK: 24
+- Minimum SDK: 26
 - Kotlin 1.9+
 - Internet Connection (for API fetching)
 
