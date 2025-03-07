@@ -58,8 +58,8 @@ app/
 
 ### Setup Instructions
 
-- **Note:** For testing purposes, the API key is placed in a `gradle.properties` file so that you can easily run the app 
-- **Important:** For production-level builds, the API key has to be stored in the `local.properties` file to ensure it remains hidden and is not checked into version control
+- **Note:** For testing purposes, the API key is placed in a `gradle.properties` file so that you can easily run the app. 
+- **Important:** the API key must be stored in the `local.properties` file for production-level builds to ensure it remains hidden and is not checked into version control. Additionally, the "tickers.txt" file is intentionally included in version control to support testing purposes
 
 1. **Clone the repository**  
     ```bash
