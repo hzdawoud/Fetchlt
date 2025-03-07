@@ -106,7 +106,7 @@ This project includes unit tests to ensure the reliability and correctness of th
 
 ## Architecture
 
-This project follows a **clean MVVM architecture**:
+This project follows a **clean MVVM & MVI architecture**:
 
 - **UI Layer:** Composable functions and ViewModel
 - **Domain Layer:** Business logic (UseCases, Models)
