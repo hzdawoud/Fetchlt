@@ -27,10 +27,6 @@ class EodDataViewModel @Inject constructor(
     // Cache the stocks for detail screen
     private var stocksCache: List<EodEntry> = emptyList()
 
-    init {
-        fetchStocks("AAPL,MSFT,GOOG,AMZN")
-    }
-
     // Fetch stock data for the list
     fun fetchStocks(symbols: String) {
         viewModelScope.launch {

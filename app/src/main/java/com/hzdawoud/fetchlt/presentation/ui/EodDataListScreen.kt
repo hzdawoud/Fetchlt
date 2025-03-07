@@ -1,5 +1,7 @@
 package com.hzdawoud.fetchlt.presentation.ui
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,6 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.hzdawoud.fetchlt.presentation.viewmodel.EodDataViewModel
 
@@ -28,9 +31,12 @@ fun EodListScreen(
     viewModel: EodDataViewModel
 ) {
     val uiState by viewModel.stockListState.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        viewModel.fetchStocks("AAPL,MSFT,GOOG,AMZN,META,TSLA")
+        // Attempt to load tickers from the external file (assets/tickers.txt)
+        val tickers: String = readStockSymbolsFromFile(context)
+        viewModel.fetchStocks(tickers)
     }
 
     Scaffold(
@@ -86,5 +92,15 @@ fun EodListScreen(
                 }
             }
         }
+    }
+}
+
+private fun readStockSymbolsFromFile(context: Context): String {
+    return try {
+        context.assets.open("tickers.txt").bufferedReader().use { it.readText() }.trim()
+    } catch (e: Exception) {
+        Log.e("EodListScreen", "Error reading stock symbols file: ${e.message}")
+        // Fallback to default symbols if file reading fails
+        "AAPL"
     }
 }
