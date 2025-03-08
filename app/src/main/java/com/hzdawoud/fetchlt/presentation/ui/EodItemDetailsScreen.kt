@@ -42,6 +42,7 @@ import com.hzdawoud.fetchlt.presentation.viewmodel.EodDataViewModel
 import com.hzdawoud.fetchlt.ui.theme.green
 import com.hzdawoud.fetchlt.utils.CoilUtil.getStockLogoUrl
 import com.hzdawoud.fetchlt.utils.DateUtil
+import com.hzdawoud.fetchlt.utils.StringUtil.formatted
 
 @SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,6 +81,7 @@ fun EodDetailScreen(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
+
                 uiState.error != null -> {
                     ErrorView(
                         message = uiState.error!!,
@@ -87,6 +89,7 @@ fun EodDetailScreen(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
+
                 uiState.stock != null -> {
                     val stock = uiState.stock!!
 
@@ -154,14 +157,10 @@ fun EodDetailScreen(
                                         DetailScreenCell("Low", "$${stock.low}")
                                         DetailScreenCell("Volume", "${stock.volume.toInt()}")
 
-                                        val priceChange = stock.close - stock.open
-                                        val percentChange = (priceChange / stock.open) * 100
-                                        val isPositive = priceChange >= 0
-
                                         DetailScreenCell(
                                             "Change",
-                                            "${if (isPositive) "+" else ""}${String.format("%.2f", priceChange)} (${String.format("%.2f", percentChange)}%)",
-                                            if (isPositive) green else Color.Red
+                                            "${if (stock.isPositive) "+" else ""}${stock.priceChange.formatted()} (${stock.percentChange.formatted()}%)",
+                                            if (stock.isPositive) green else Color.Red
                                         )
                                     }
                                 }
@@ -219,8 +218,10 @@ fun EodDetailScreen(
                                 DetailScreenCell("Dividend", "$${stock.dividend}")
 
                                 if (stock.dividend > 0) {
-                                    val dividendYield = (stock.dividend / stock.close) * 100
-                                    DetailScreenCell("Dividend Yield", "${String.format("%.2f", dividendYield)}%")
+                                    DetailScreenCell(
+                                        "Dividend Yield",
+                                        "${stock.dividendYield.formatted()}%"
+                                    )
                                 } else {
                                     DetailScreenCell("Dividend Yield", "No dividend")
                                 }

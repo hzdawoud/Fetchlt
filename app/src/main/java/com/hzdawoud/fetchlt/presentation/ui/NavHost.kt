@@ -7,9 +7,9 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.hzdawoud.fetchlt.presentation.navigation.Screen
 import com.hzdawoud.fetchlt.presentation.viewmodel.EodDataViewModel
 import com.hzdawoud.fetchlt.utils.Const
-import com.hzdawoud.fetchlt.utils.navigation.Screen
 
 @Composable
 fun StockNavHost(
@@ -22,10 +22,10 @@ fun StockNavHost(
     ) {
         composable(Screen.StockList.route) {
             EodListScreen(
-                onItemClick = { symbol ->
-                    navController.navigate(Screen.StockDetail.createRoute(symbol))
-                },
-                viewModel = viewModel
+                viewModel = viewModel,
+                onItemClick = { uuid ->
+                    navController.navigate(Screen.StockDetail.createRoute(uuid))
+                }
             )
         }
         composable(

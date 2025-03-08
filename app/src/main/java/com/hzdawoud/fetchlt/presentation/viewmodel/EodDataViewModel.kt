@@ -1,5 +1,7 @@
 package com.hzdawoud.fetchlt.presentation.viewmodel
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hzdawoud.fetchlt.data.repository.EodDataRepository
@@ -37,19 +39,22 @@ class EodDataViewModel @Inject constructor(
                     stocksCache = result.data.data
                     _stockListState.value = StockListUiState(stocks = result.data.data)
                 }
+
                 is Resource.Error -> {
                     _stockListState.value = StockListUiState(
                         error = result.message ?: "Unknown error occurred"
                     )
                 }
+
                 Resource.Loading -> {
                     // This is handled by setting isLoading = true above
+                    Log.d(TAG, "fetchStocks: Loading state")
                 }
             }
         }
     }
 
-    // Load details for a specific stock symbol
+    // Load details for a specific stock uuid
     fun loadStockDetails(id: String) {
         viewModelScope.launch {
             _stockDetailState.value = StockDetailUiState(isLoading = true)
@@ -67,6 +72,19 @@ class EodDataViewModel @Inject constructor(
         }
     }
 
+    fun readStockSymbolsFromFile(context: Context): String {
+        return try {
+            context.assets.open("tickers.txt").bufferedReader().use { it.readText() }.trim()
+        } catch (e: Exception) {
+            Log.e("EodListScreen", "Error reading stock symbols file: ${e.message}")
+            // Fallback to default symbols if file reading fails
+            "AAPL,MSFT,GOOG,AMZN"
+        }
+    }
+
+    companion object {
+        val TAG: String = EodDataViewModel::class.java.simpleName
+    }
 }
 
 data class StockListUiState(

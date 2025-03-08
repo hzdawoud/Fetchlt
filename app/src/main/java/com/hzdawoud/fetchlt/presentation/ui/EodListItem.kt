@@ -27,11 +27,12 @@ import coil.compose.AsyncImage
 import com.hzdawoud.fetchlt.domain.model.EodEntry
 import com.hzdawoud.fetchlt.ui.theme.green
 import com.hzdawoud.fetchlt.utils.CoilUtil.getStockLogoUrl
+import com.hzdawoud.fetchlt.utils.StringUtil.formatted
 
 @SuppressLint("DefaultLocale")
 @Composable
 fun EodListItem(
-    stock: EodEntry,
+    entry: EodEntry,
     onClick: () -> Unit
 ) {
     Card(
@@ -50,8 +51,8 @@ fun EodListItem(
         ) {
             // Stock logo
             AsyncImage(
-                model = getStockLogoUrl(stock.symbol),
-                contentDescription = "${stock.symbol} logo",
+                model = getStockLogoUrl(entry.symbol),
+                contentDescription = "${entry.symbol} logo",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .size(48.dp)
@@ -63,31 +64,27 @@ fun EodListItem(
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = stock.symbol,
-                    style = MaterialTheme.typography.headlineSmall
+                    text = entry.symbol,
+                    style = MaterialTheme.typography.bodyLarge
                 )
                 Text(
-                    text = stock.exchange,
-                    style = MaterialTheme.typography.headlineSmall
+                    text = entry.exchange,
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
 
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "$${stock.close}",
+                    text = "$${entry.close}",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Bold
                     )
                 )
 
-                val priceChange = stock.close - stock.open
-                val percentChange = (priceChange / stock.open) * 100
-                val isPositive = priceChange >= 0
-
                 Text(
-                    text = "${if (isPositive) "+" else ""}${String.format("%.2f", priceChange)} (${String.format("%.2f", percentChange)}%)",
+                    text = "${if (entry.isPositive) "+" else ""}${entry.priceChange.formatted()} (${entry.percentChange.formatted()}%)",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = if (isPositive) green else Color.Red
+                    color = if (entry.isPositive) green else Color.Red
                 )
             }
         }

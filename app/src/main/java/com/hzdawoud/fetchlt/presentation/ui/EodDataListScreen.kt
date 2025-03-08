@@ -1,7 +1,5 @@
 package com.hzdawoud.fetchlt.presentation.ui
 
-import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,15 +25,15 @@ import com.hzdawoud.fetchlt.presentation.viewmodel.EodDataViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EodListScreen(
-    onItemClick: (String) -> Unit,
-    viewModel: EodDataViewModel
+    viewModel: EodDataViewModel,
+    onItemClick: (String) -> Unit
 ) {
     val uiState by viewModel.stockListState.collectAsState()
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         // Attempt to load tickers from the external file (assets/tickers.txt)
-        val tickers: String = readStockSymbolsFromFile(context)
+        val tickers: String = viewModel.readStockSymbolsFromFile(context)
         viewModel.fetchStocks(tickers)
     }
 
@@ -61,7 +59,7 @@ fun EodListScreen(
                 uiState.error != null -> {
                     ErrorView(
                         message = uiState.error!!,
-                        onRetry = { viewModel.fetchStocks("AAPL,MSFT,GOOG,AMZN,META,TSLA") },
+                        onRetry = { viewModel.readStockSymbolsFromFile(context) },
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
@@ -77,7 +75,7 @@ fun EodListScreen(
                             key = { it.id } // Use unique key to avoid unnecessary recomposition
                         ) { stock ->
                             EodListItem(
-                                stock = stock,
+                                entry = stock,
                                 onClick = { onItemClick(stock.id) }
                             )
                         }
@@ -92,15 +90,5 @@ fun EodListScreen(
                 }
             }
         }
-    }
-}
-
-private fun readStockSymbolsFromFile(context: Context): String {
-    return try {
-        context.assets.open("tickers.txt").bufferedReader().use { it.readText() }.trim()
-    } catch (e: Exception) {
-        Log.e("EodListScreen", "Error reading stock symbols file: ${e.message}")
-        // Fallback to default symbols if file reading fails
-        "AAPL"
     }
 }
