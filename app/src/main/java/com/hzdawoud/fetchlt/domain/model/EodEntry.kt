@@ -19,4 +19,17 @@ data class EodEntry(
     val symbol: String,
     val exchange: String,
     val date: String
-)
+) {
+
+    val priceChange: Double
+        get() = close - open
+
+    val percentChange: Double
+        get() = (priceChange / open) * 100
+
+    val isPositive: Boolean
+        get() = priceChange >= 0
+
+    val dividendYield: Double
+        get() = if (dividend > 0) (dividend / close) * 100 else 0.0
+}

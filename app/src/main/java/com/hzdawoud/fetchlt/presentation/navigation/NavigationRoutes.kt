@@ -1,4 +1,4 @@
-package com.hzdawoud.fetchlt.utils.navigation
+package com.hzdawoud.fetchlt.presentation.navigation
 
 sealed class Screen(val route: String) {
     data object StockList : Screen("stockList")
