@@ -5,23 +5,35 @@ import com.hzdawoud.fetchlt.data.model.EodResponseDto
 import com.hzdawoud.fetchlt.data.remote.APIService
 import com.hzdawoud.fetchlt.data.repository.EodDataRepository
 import com.hzdawoud.fetchlt.data.repository.EodDataRepositoryImpl
-import com.hzdawoud.fetchlt.domain.model.EodResponse
-import com.hzdawoud.fetchlt.utils.network.Resource
+import com.hzdawoud.fetchlt.domain.model.EodEntry
+import com.hzdawoud.fetchlt.utils.network.Either
 import io.mockk.coEvery
 import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.fail
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 import retrofit2.Response
 
-@RunWith(RobolectricTestRunner::class)
 class EodDataRepositoryTest {
 
-    private val apiService = mockk<APIService>()
-    private val repository: EodDataRepository = EodDataRepositoryImpl(apiService)
+    private val apiService : APIService = mockk()
+    private val dispatcher = StandardTestDispatcher()
+    private lateinit var repository: EodDataRepository
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Before
+    fun setup() {
+        Dispatchers.setMain(dispatcher)
+        repository = EodDataRepositoryImpl(apiService)
+    }
 
     @Test
     fun `getEndOfDayData returns success resource when API returns valid data`() = runTest {
@@ -50,15 +62,21 @@ class EodDataRepositoryTest {
 
         // Act
         val resource = repository.getEndOfDayData("AAPL")
+        dispatcher.scheduler.advanceUntilIdle()
 
         // Assert
         when (resource) {
-            is Resource.Success<EodResponse> -> {
-                assertEquals(1, resource.data.data.size)
-                assertEquals("AAPL", resource.data.data[0].symbol)
+            is Either.Success<List<EodEntry>> -> {
+                assertEquals(1, resource.data.size)
+                assertEquals("AAPL", resource.data[0].symbol)
             }
-            is Resource.Error -> fail("Expected success, got error: ${resource.exception.message}")
-            else -> fail("Unexpected resource type")
+            is Either.Error -> fail("Expected success, got error: ${resource.error}")
         }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
 }

@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.hzdawoud.fetchlt.presentation.viewmodel.EodDataViewModel
+import com.hzdawoud.fetchlt.presentation.viewmodel.StockListUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,9 +33,11 @@ fun EodListScreen(
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        // Attempt to load tickers from the external file (assets/tickers.txt)
-        val tickers: String = viewModel.readStockSymbolsFromFile(context)
-        viewModel.fetchStocks(tickers)
+        // Avoid fetching data if it already exists unless explicitly requested by the user
+        if (uiState !is StockListUiState.Success) {
+            val tickers: String = viewModel.readStockSymbolsFromFile(context) // Load tickers from assets/tickers.txt
+            viewModel.fetchStocks(tickers)
+        }
     }
 
     Scaffold(
@@ -49,29 +52,28 @@ fun EodListScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            when {
-                uiState.isLoading -> {
+            when(uiState) {
+                is StockListUiState.Loading -> {
                     CircularProgressIndicator(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
 
-                uiState.error != null -> {
+                is StockListUiState.Error -> {
                     ErrorView(
-                        message = uiState.error!!,
-                        onRetry = { viewModel.readStockSymbolsFromFile(context) },
-                        modifier = Modifier.align(Alignment.Center)
+                        modifier = Modifier.align(Alignment.Center),
+                        onRetry = { viewModel.readStockSymbolsFromFile(context) }
                     )
                 }
 
-                uiState.stocks.isNotEmpty() -> {
+                is StockListUiState.Success -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         items(
-                            items = uiState.stocks,
+                            items = (uiState as StockListUiState.Success).stocks,
                             key = { it.id } // Use unique key to avoid unnecessary recomposition
                         ) { stock ->
                             EodListItem(
