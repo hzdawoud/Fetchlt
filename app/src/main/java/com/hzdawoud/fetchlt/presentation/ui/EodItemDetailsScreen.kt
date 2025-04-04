@@ -39,6 +39,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.hzdawoud.fetchlt.presentation.viewmodel.EodDataViewModel
+import com.hzdawoud.fetchlt.presentation.viewmodel.StockDetailUiState
 import com.hzdawoud.fetchlt.ui.theme.green
 import com.hzdawoud.fetchlt.utils.CoilUtil.getStockLogoUrl
 import com.hzdawoud.fetchlt.utils.DateUtil
@@ -75,23 +76,22 @@ fun EodDetailScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            when {
-                uiState.isLoading -> {
+            when(uiState) {
+                is StockDetailUiState.Loading -> {
                     CircularProgressIndicator(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
 
-                uiState.error != null -> {
+                is StockDetailUiState.Error -> {
                     ErrorView(
-                        message = uiState.error!!,
                         onRetry = { viewModel.loadStockDetails(id) },
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
 
-                uiState.stock != null -> {
-                    val stock = uiState.stock!!
+                is StockDetailUiState.Success -> {
+                    val stock = (uiState as StockDetailUiState.Success).stock
 
                     Column(
                         modifier = Modifier

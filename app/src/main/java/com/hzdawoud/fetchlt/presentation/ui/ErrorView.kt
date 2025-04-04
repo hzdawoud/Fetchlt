@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ErrorView(
-    message: String,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -39,7 +38,7 @@ fun ErrorView(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = message,
+            text = "Something wrong happened!",
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center
         )

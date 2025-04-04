@@ -1,22 +1,18 @@
 package com.hzdawoud.fetchlt.data.repository
 
-import android.util.Log
 import com.hzdawoud.fetchlt.data.remote.APIService
-import com.hzdawoud.fetchlt.domain.model.EodResponse
-import com.hzdawoud.fetchlt.utils.network.NetworkHandler.toResource
-import com.hzdawoud.fetchlt.utils.network.Resource
+import com.hzdawoud.fetchlt.domain.model.EodEntry
+import com.hzdawoud.fetchlt.utils.network.Either
+import com.hzdawoud.fetchlt.utils.network.ErrorEntity
+import com.hzdawoud.fetchlt.utils.network.NetworkHandler.toEither
 import javax.inject.Inject
 
 class EodDataRepositoryImpl @Inject constructor(private val apiService: APIService) :
     EodDataRepository {
 
-    init {
-        Log.d(TAG, "init")
-    }
-
-    override suspend fun getEndOfDayData(symbols: String): Resource<EodResponse> {
-        return apiService.getEndOfDayData(symbols).toResource(
-            transform = { it.toDomain() },
+    override suspend fun getEndOfDayData(symbols: String): Either<ErrorEntity, List<EodEntry>> {
+        return apiService.getEndOfDayData(symbols).toEither(
+            transform = { it.data.map { entry -> entry.toDomain() } },
             tag = TAG
         )
     }

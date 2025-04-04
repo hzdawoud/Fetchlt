@@ -6,24 +6,27 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hzdawoud.fetchlt.data.repository.EodDataRepository
 import com.hzdawoud.fetchlt.domain.model.EodEntry
-import com.hzdawoud.fetchlt.utils.network.Resource
+import com.hzdawoud.fetchlt.utils.network.Either
+import com.hzdawoud.fetchlt.utils.network.ErrorEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
-
 
 @HiltViewModel
 class EodDataViewModel @Inject constructor(
-    private val repository: EodDataRepository
+    private val repository: EodDataRepository,
+    private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-    private val _stockListState = MutableStateFlow(StockListUiState(isLoading = true))
+    private val _stockListState = MutableStateFlow<StockListUiState>(StockListUiState.Loading)
     val stockListState: StateFlow<StockListUiState> = _stockListState.asStateFlow()
 
-    private val _stockDetailState = MutableStateFlow(StockDetailUiState(isLoading = false))
+    private val _stockDetailState = MutableStateFlow<StockDetailUiState>(StockDetailUiState.Loading)
     val stockDetailState: StateFlow<StockDetailUiState> = _stockDetailState.asStateFlow()
 
     // Cache the stocks for detail screen
@@ -32,23 +35,18 @@ class EodDataViewModel @Inject constructor(
     // Fetch stock data for the list
     fun fetchStocks(symbols: String) {
         viewModelScope.launch {
-            _stockListState.value = StockListUiState(isLoading = true)
+            _stockListState.value = StockListUiState.Loading
 
-            when (val result = repository.getEndOfDayData(symbols)) {
-                is Resource.Success -> {
-                    stocksCache = result.data.data
-                    _stockListState.value = StockListUiState(stocks = result.data.data)
-                }
+            val result = withContext(dispatcher) {
+                repository.getEndOfDayData(symbols)
+            }
 
-                is Resource.Error -> {
-                    _stockListState.value = StockListUiState(
-                        error = result.message ?: "Unknown error occurred"
-                    )
-                }
-
-                Resource.Loading -> {
-                    // This is handled by setting isLoading = true above
-                    Log.d(TAG, "fetchStocks: Loading state")
+            _stockListState.value = when (result) {
+                is Either.Success -> StockListUiState.Success(result.data)
+                is Either.Error -> StockListUiState.Error(result.error)
+            }.also {
+                if (it is StockListUiState.Success) {
+                    stocksCache = it.stocks
                 }
             }
         }
@@ -57,18 +55,13 @@ class EodDataViewModel @Inject constructor(
     // Load details for a specific stock uuid
     fun loadStockDetails(id: String) {
         viewModelScope.launch {
-            _stockDetailState.value = StockDetailUiState(isLoading = true)
+            _stockDetailState.value = StockDetailUiState.Loading
 
             // Find the stock in our cache
-            val stock = stocksCache.find { it.id == id }
-
-            if (stock != null) {
-                _stockDetailState.value = StockDetailUiState(stock = stock)
-            } else {
-                _stockDetailState.value = StockDetailUiState(
-                    error = "Stock details not found"
-                )
-            }
+            val stock = stocksCache.firstOrNull { it.id == id }
+            _stockDetailState.value = stock?.let {
+                StockDetailUiState.Success(it)
+            } ?: StockDetailUiState.Error(ErrorEntity.NotFound)
         }
     }
 
@@ -87,15 +80,15 @@ class EodDataViewModel @Inject constructor(
     }
 }
 
-data class StockListUiState(
-    val stocks: List<EodEntry> = emptyList(),
-    val isLoading: Boolean = false,
-    val error: String? = null
-)
+sealed class StockListUiState {
+    data object Loading : StockListUiState()
+    data class Success(val stocks: List<EodEntry>) : StockListUiState()
+    data class Error(val error: ErrorEntity) : StockListUiState()
+}
 
 // UI state for stock details
-data class StockDetailUiState(
-    val stock: EodEntry? = null,
-    val isLoading: Boolean = false,
-    val error: String? = null
-)
+sealed class StockDetailUiState {
+    data object Loading : StockDetailUiState()
+    data class Success(val stock: EodEntry) : StockDetailUiState()
+    data class Error(val error: ErrorEntity) : StockDetailUiState()
+}
