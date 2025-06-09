@@ -62,7 +62,10 @@ fun EodListScreen(
                 is StockListUiState.Error -> {
                     ErrorView(
                         modifier = Modifier.align(Alignment.Center),
-                        onRetry = { viewModel.readStockSymbolsFromFile(context) }
+                        onRetry = {
+                            val tickers = viewModel.readStockSymbolsFromFile(context)
+                            viewModel.fetchStocks(tickers)
+                        }
                     )
                 }
 
